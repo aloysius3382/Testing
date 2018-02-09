@@ -1,0 +1,64 @@
+// standard library includes
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <cstring>
+#include <sstream>
+#include <cstdlib>
+#include <cstddef>
+#include <ctime>
+
+using namespace std;
+// end standard library includes
+
+// pdfwriter library includes
+#include "PDFWriter.h"
+#include "PDFPage.h"
+#include "PageContentContext.h"
+#include "PDFFormXObject.h"
+#include "XObjectContentContext.h"
+#include "PDFModifiedPage.h"
+#include "PDFParser.h"
+#include "PDFEmbedParameterTypes.h"
+#include "PDFDocumentCopyingContext.h"
+#include "ObjectsContext.h"
+// end pdfwriter library includes
+
+int main(int argc, char* argv[])
+{
+    using namespace std;
+
+    using namespace PDFHummus;
+
+
+    PDFWriter pdfWriter;
+    pdfWriter.StartPDF("VoteTestlogo.pdf",ePDFVersion13);
+
+    EStatusCodeAndObjectIDTypeList result = pdfWriter.CreateFormXObjectsFromPDF("test.pdf",PDFPageRange(),ePDFPageBoxMediaBox);
+    ObjectIDTypeList::iterator it = result.second.begin();
+    ObjectIDType firstPageID = *it;
+
+    PDFPage* page = new PDFPage();
+    page->SetMediaBox(PDFRectangle(0,0,174,62));
+    PageContentContext* contentContext = pdfWriter.StartPageContentContext(page);
+    contentContext->q();
+    contentContext->cm(1,0,0,1,-15,-11.5);
+    contentContext->Do(page->GetResourcesDictionary().AddFormXObjectMapping(firstPageID));
+    contentContext->Q();
+    pdfWriter.EndPageContentContext(contentContext);
+    pdfWriter.WritePage(page);
+
+    pdfWriter.EndPDF();
+
+    /*
+    PDFWriter pdfWriter;
+    EStatusCode status;
+    PDFDocumentCopyingContext* firstContext = NULL;
+    status = pdfWriter.StartPDF("file2.PDF",ePDFVersion13);
+    firstContext = pdfWriter.CreatePDFCopyingContext("VoteTestlogo.pdf");
+    firstContext->AppendPDFPageFromPDF(0).first;
+    pdfWriter.EndPDF();
+    */
+
+    return 0;
+}
