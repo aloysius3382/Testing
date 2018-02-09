@@ -5,5 +5,6 @@
 int main(int argc, char** argv) 
 {
 	cout << "Hello world" << endl;
+	cout << "no really, hello" << endl;
 	return 0;
 }
